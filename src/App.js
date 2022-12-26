@@ -1,49 +1,51 @@
-import React, { useState } from "react";
-
-function computeInitialCount(){
-  console.log("some calculations...")
-  return Math.trunc(Math.random() * 20)
-}
+import React, {useEffect, useState} from "react";
 
 function App() {
-  
-  const [count, setCount] = useState(()=>{
-    return computeInitialCount()
+
+  const [type, setType] = useState('users')
+  const [data, setData] = useState([])
+  const [pos, setPos] = useState({
+    x: 0, y: 0
   })
 
-  const [state, setState] = useState({
-    title: 'test',
-    date: Date.now()
-  })
+  // useEffect(()=>{
+  //   console.log('render')
+  // })
 
-  function increment(){
-    // setCount(count + 1)
-    setCount((prevCount) => {
-      return prevCount + 1
-    })
-    // setCount(prev => prev + 1)
-  }
-  function decrement(){
-    setCount(count - 1)
-  }
+  useEffect(()=>{
+    fetch(`https://jsonplaceholder.typicode.com/${type}`)
+    .then(response => response.json())
+    .then(json => setData(json)) 
 
-  function updateTitle(){
-    setState(prev => {
-      return {
-        ...prev,
-        title: 'new test' 
-      }
+    return () => {
+      console.log('clean type') // очистка вызывается всегда когда мы заново заходим в колбэк
+    }
+  }, [type]) 
+
+  const mouseMoveHandler = event => {
+    setPos({
+      x: event.clientX,
+      y: event.clientY
     })
   }
+
+  useEffect(()=>{
+    console.log('ComponentDidMount')
+
+    window.addEventListener('mousemove', mouseMoveHandler)
+  }, [])
 
   return (
     <div>
-      <h1>Counter: {count}</h1>
-      <button onClick={increment}>increment</button>
-      <button onClick={decrement}>decrement</button>
-      <button onClick={updateTitle}>change title</button>
+      <h1>Resource: {type}</h1>
 
-      <pre>{JSON.stringify(state, null, 2)}</pre>
+      <button onClick={()=>setType('users')}>Users</button>
+      <button onClick={()=>setType('todos')}>Todos</button>
+      <button onClick={()=>setType('posts')}>Posts</button>
+
+      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
+
+      <pre>{JSON.stringify(pos, null, 2)}</pre>
     </div>
   );
 }
