@@ -1,51 +1,29 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 
 function App() {
 
-  const [type, setType] = useState('users')
-  const [data, setData] = useState([])
-  const [pos, setPos] = useState({
-    x: 0, y: 0
-  })
+const [value, setValue] = useState('initial')
+const renderCount = useRef(1)
+const inputRef = useRef(null)
+const prevValue = useRef('')
 
-  // useEffect(()=>{
-  //   console.log('render')
-  // })
+useEffect(()=>{
+  renderCount.current++
+  // console.log(inputRef.current.value)
+})
 
-  useEffect(()=>{
-    fetch(`https://jsonplaceholder.typicode.com/${type}`)
-    .then(response => response.json())
-    .then(json => setData(json)) 
+useEffect(()=>{
+  prevValue.current = value
+}, [value])
 
-    return () => {
-      console.log('clean type') // очистка вызывается всегда когда мы заново заходим в колбэк
-    }
-  }, [type]) 
-
-  const mouseMoveHandler = event => {
-    setPos({
-      x: event.clientX,
-      y: event.clientY
-    })
-  }
-
-  useEffect(()=>{
-    console.log('ComponentDidMount')
-
-    window.addEventListener('mousemove', mouseMoveHandler)
-  }, [])
+const focus = () => inputRef.current.focus()
 
   return (
     <div>
-      <h1>Resource: {type}</h1>
-
-      <button onClick={()=>setType('users')}>Users</button>
-      <button onClick={()=>setType('todos')}>Todos</button>
-      <button onClick={()=>setType('posts')}>Posts</button>
-
-      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-
-      <pre>{JSON.stringify(pos, null, 2)}</pre>
+      <h1>количество рендеров: {renderCount.current}</h1>
+      <h2>прошлое состояние: {prevValue.current}</h2>
+      <input ref={inputRef} type='text' onChange={e => setValue(e.target.value)} value={value}/>
+      <button onClick={focus}>фокус</button>
     </div>
   );
 }
