@@ -1,27 +1,18 @@
-import React, {useCallback, useState} from "react";
-import ItemsList from "./ItemsList";
+import React from "react";
+import Alert from "./alert/Alert";
+import { AlertProvider } from "./alert/AlertContext";
+import Main from "./Main";
+
+export const AlertContext = React.createContext()
 
 function App() {
-
-const [colored, setColored] = useState(false)
-const [count, setCount] = useState(1)
-
-const styles = {
-  color: colored ? 'darkred' : 'black'
-}
-
-const generateItemsFromAPI = useCallback((indexNumber)=>{
-  return new Array(count).fill('').map((_, i)=> `element ${i+indexNumber}`)
-}, [count])/* используем чтобы перерисовывалось только в том случае когда изменится getItems */
-
   return (
-    <>
-      <h1 style={styles}>вычесляемое свойство: {count}</h1>
-      <button onClick={()=>setCount(prev => prev + 1)}>add</button>
-      <button onClick={()=>setColored(prev => !prev)}>change</button>
-
-      <ItemsList getItems={generateItemsFromAPI}/>
-    </>
+    <AlertProvider>
+      <div>
+        <Alert />
+        <Main toggle={()=>{}} />
+      </div>
+    </AlertProvider>
   );
 }
 
